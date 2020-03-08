@@ -1,40 +1,55 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import sys
-from PyQt5.QtCore import QTimer
+from PyQt5.QtCore import Qt, QPoint, QBasicTimer, QSize
 
 
-x = 1
-y = 1
-a = 10
-def window():
-	app = QtWidgets.QApplication(sys.argv)
-	main_window = QtWidgets.QWidget()	
-	main_window.setWindowTitle('MY GAME')
-	main_window.setGeometry(700, 300, 300, 200)
-
-	global x
-	def move():
-
-		global x, y, a
-		x += a
-		unit1.move(x,y)	
-		txt = (str(x) + '/' + str(y))
-		button.setText(txt)
-		if x >= 200 or x <= 1:
-			a = -a
-			y += 10	
-			
-
-	button = QtWidgets.QPushButton(main_window)
-	unit1 = QtWidgets.QLabel(main_window)
-	button.setGeometry(QtCore.QRect(100, 100, 40, 30))
-	button.clicked.connect(move)
-	unit1.setPixmap(QtGui.QPixmap('unit1.png'))
+from PyQt5.QtWidgets import QMainWindow, QLabel, QGridLayout, QWidget
 
 
-	main_window.show()
-	sys.exit(app.exec_())
 
-window()	
+class ExampleWindow(QMainWindow):
+	def __init__(self):
+		super().__init__()
+		self.setMinimumSize(QSize(800, 600))
+		self.setWindowTitle('Пришельцы')
+		central_widget = QWidget(self)
+		self.setCentralWidget(central_widget)
+
+		self.alien_unit = []
+		self.step_x = 50
+		self.step_y = 50
+		self.alien_size = 50
+		self.alien_unit_img = QtGui.QPixmap('unit1.png')
+		self.player = QtWidgets.QLabel(self)
+		self.player_img = QtGui.QPixmap('player.png')
+		self.player_x = 0
+
+	def squad(self):
+		for i in range(10):
+			self.alien_unit.append(QtWidgets.QLabel(self))	
+			self.alien_unit[i].setPixmap(self.alien_unit_img)
+			self.alien_unit[i].setGeometry(QtCore.QRect(self.step_x, 100, self.alien_size, self.alien_size))	
+			self.step_x += self.alien_size
+
+	def my_player(self):
+		self.player.setPixmap(self.player_img)
+		self.player.setGeometry(QtCore.QRect(self.player_x, 300, self.alien_size, self.alien_size))
+		
+
+	def keyPressEvent(self, event):
+		if event.key() == QtCore.Qt.Key_Q:
+			self.player.setGeometry(QtCore.QRect(self.player_x, 300, self.alien_size, self.alien_size))
+			self.player_x += 1
+			print(self.player_x)
+		event.accept()
+
+app = QtWidgets.QApplication(sys.argv)
+main_window = ExampleWindow()
+main_window.squad()
+main_window.my_player()
+main_window.show()
+sys.exit(app.exec_())
+
+	
 
 	
