@@ -16,20 +16,29 @@ class ExampleWindow(QMainWindow):
 		self.setCentralWidget(central_widget)
 
 		self.alien_unit = []
-		self.step_x = 50
+		self.step_x = 100
 		self.step_y = 50
 		self.alien_size = 50
 		self.alien_unit_img = QtGui.QPixmap('unit1.png')
+		#self.tarelko = QtGui.QPixmap('7471.png')
+		#self.tarelko.drawPixmap(3, 3, self.tarelko)
 		self.player = QtWidgets.QLabel(self)
 		self.player_img = QtGui.QPixmap('player.png')
 		self.player_x = 0
+
+	def paintEvent (self, e):
+		painter = QtGui.QPainter()
+		painter.begin(self)
+		pass
+		painter.end()
+
 
 	def squad(self):
 		for i in range(10):
 			self.alien_unit.append(QtWidgets.QLabel(self))	
 			self.alien_unit[i].setPixmap(self.alien_unit_img)
 			self.alien_unit[i].setGeometry(QtCore.QRect(self.step_x, 100, self.alien_size, self.alien_size))	
-			self.step_x += self.alien_size
+			self.step_x += self.alien_size+10
 
 	def my_player(self):
 		self.player.setPixmap(self.player_img)
@@ -37,9 +46,9 @@ class ExampleWindow(QMainWindow):
 		
 
 	def keyPressEvent(self, event):
-		if event.key() == QtCore.Qt.Key_Q:
+		if event.key() == QtCore.Qt.Key_D:
 			self.player.setGeometry(QtCore.QRect(self.player_x, 300, self.alien_size, self.alien_size))
-			self.player_x += 1
+			self.player_x += 10
 			print(self.player_x)
 		event.accept()
 
