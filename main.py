@@ -1,6 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import sys
-from PyQt5.QtCore import Qt, QPoint, QBasicTimer, QSize
+from PyQt5.QtCore import Qt, QPoint, QTimer, QSize
 
 
 from PyQt5.QtWidgets import QMainWindow, QLabel, QGridLayout, QWidget
@@ -15,50 +15,78 @@ class ExampleWindow(QMainWindow):
 		central_widget = QWidget(self)
 		self.setCentralWidget(central_widget)
 
+		
 		self.alien_unit = []
 		self.step_x = 100
 		self.step_y = 50
-		self.alien_size = 50
+		self.alien_size = 70
 		self.alien_unit_img = QtGui.QPixmap('unit1.png')
-		self.tarelko = QtGui.QPixmap('7471.png')		
+		self.sd_img = QtGui.QPixmap('sd.png')
+		self.alien = QtGui.QPixmap('7471.png')		
 		self.player = QtWidgets.QLabel(self)
 		self.player_img = QtGui.QPixmap('player.png')
-		self.player_img2 = self.tarelko.copy(100, 0, 70, 58)
-		self.player_x = 0
+		self.alien_green_img = self.alien.copy(100, 0, 70, 60)
+		self.alien_yello_img = self.alien.copy(180, 0, 70, 60)
+		self.alien_blue_img = self.alien.copy(255, 0, 70, 60)
+		self.player_x = 400
+		self.player_y = 530
+		self.player.setPixmap(self.player_img)
+		self.player.setGeometry(QtCore.QRect(self.player_x, self.player_y, 70, 58))
 
+		self.sd = QtWidgets.QLabel(self)
+		self.sd.setPixmap(self.sd_img)
+		print('iop')
+		
 		
 
 	def paintEvent (self, e):
-		painter = QtGui.QPainter(self)
-		painter.drawPixmap(self.player_x, 3, self.tarelko, 100, 0, 69, 58)
+		#painter = QtGui.QPainter(self)
+		#painter.drawPixmap(self.player_x, 3, self.tarelko, 100, 0, 69, 58)
 		#painter.begin(self)
-
+		pass
 		#painter.end()
 
 
 	def squad(self):
-		for i in range(10):
+		for i in range(6):
 			self.alien_unit.append(QtWidgets.QLabel(self))	
-			self.alien_unit[i].setPixmap(self.alien_unit_img)
+			self.alien_unit[i].setPixmap(self.alien_blue_img)
 			self.alien_unit[i].setGeometry(QtCore.QRect(self.step_x, 100, self.alien_size, self.alien_size))	
 			self.step_x += self.alien_size+10
 
-	def my_player(self):
-		self.player.setPixmap(self.player_img2)
-		self.player.setGeometry(QtCore.QRect(self.player_x, 300, 70, 58))
-		
 
-	def keyPressEvent(self, event):
-		if event.key() == QtCore.Qt.Key_D:
-			self.player.setGeometry(QtCore.QRect(self.player_x, 300, 70, 58))
-			self.player_x += 10
-			print(self.player_x)
+	def my_player(self):
+		#self.player.setPixmap(self.player_img2)
+		#self.player.setGeometry(QtCore.QRect(self.player_x, self.player_y, 70, 58))
+		pass
+
+	def keyPressEvent(self, event):		
+		if event.key() == QtCore.Qt.Key_Right and self.player_x <= 800-100:
+			self.player_x += 50
+		if event.key() == QtCore.Qt.Key_Left and self.player_x >= 0+50:
+			self.player_x -= 50
+		if event.key() == QtCore.Qt.Key_Space:
+			timer = QTimer()
+			timer.start(1000)
+			timer.timeout.connect(self.start)
+
+			
+		self.player.setGeometry(QtCore.QRect(self.player_x, self.player_y, 70, 58))
 		event.accept()
+
+	def start(self):
+
+		print('iop')
+
+		self.sd.setGeometry(QtCore.QRect(self.player_x, self.player_y-20, 70, 58))
+		self.player_y -= 2
+
+		
 
 app = QtWidgets.QApplication(sys.argv)
 main_window = ExampleWindow()
+
 main_window.squad()
-main_window.my_player()
 main_window.show()
 sys.exit(app.exec_())
 
