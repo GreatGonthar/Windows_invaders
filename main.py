@@ -16,6 +16,8 @@ class ExampleWindow(QMainWindow):
 		self.setCentralWidget(central_widget)
 		self.time = QBasicTimer()
 		
+		self.alien_x = []
+		self.alien_y = []
 		self.alien_unit = []
 		self.step_x = 100
 		self.step_y = 50
@@ -51,11 +53,13 @@ class ExampleWindow(QMainWindow):
 
 	def squad(self):
 		for i in range(6):
+			''' создаем пришельцев, их цвета и формы, их местоположение в пространстве'''
 			self.alien_unit.append(QtWidgets.QLabel(self))	
 			self.alien_unit[i].setPixmap(self.alien_blue_img)
 			self.alien_unit[i].setGeometry(QtCore.QRect(self.step_x, 100, self.alien_size, self.alien_size))	
+			self.alien_x.append(self.step_x + self.alien_size)
 			self.step_x += self.alien_size+10
-		
+
 
 	def my_player(self):
 		#self.player.setPixmap(self.player_img2)
@@ -81,11 +85,17 @@ class ExampleWindow(QMainWindow):
 		pass
 
 	def timerEvent(self, e):
-		if self.sd_y > 400:
+		if self.sd_y > 0:
 			self.sd_y -= 10		
 			self.sd.setGeometry(QtCore.QRect(self.sd_x+10, self.sd_y-20, 30, 30))	
+			for i in range(6):
+				
+				if self.sd_y <=100:
+					print(self.alien_x[i])
+	
 		else:
 			self.time.stop()	
+
 		self.repaint()
 
 
