@@ -30,7 +30,7 @@ class ExampleWindow(QMainWindow):
 		self.alien = QtGui.QPixmap('7471.png')		
 		self.player = QtWidgets.QLabel(self)
 		self.player_img = QtGui.QPixmap('player.png')
-		self.alien_green_img = self.alien.copy(100, 0, 70, 60)
+		self.alien_green_img = self.alien.copy(104, 0, self.alien_size_x, self.alien_size_y)
 		self.alien_yello_img = self.alien.copy(180, 0, 70, 60)
 		self.alien_blue_img = self.alien.copy(257, 0, self.alien_size_x, self.alien_size_y)
 		self.player_x = 400
@@ -97,6 +97,7 @@ class ExampleWindow(QMainWindow):
 				
 				if self.sd_y == self.step_y + self.alien_size_y and self.sd_x + 33 >= self.alien_x[i] and self.sd_x + 17 <= self.alien_x[i] + self.alien_size_x:
 					print(self.alien_x[i])
+					self.alien_unit[i].setPixmap(self.alien_yello_img)
 
 	
 		else:
