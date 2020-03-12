@@ -15,11 +15,14 @@ class ExampleWindow(QMainWindow):
 		central_widget = QWidget(self)
 		self.setCentralWidget(central_widget)
 		self.time = QBasicTimer()
+		self.alien_timer = QBasicTimer()
 		
 		self.alien_x = []
 		self.alien_y = []
 		self.alien_hitbox = []
 		self.alien_unit = []
+		self.alien_kill = []
+		self.alien_speed = 10
 		self.step_x = 100
 		self.step_y = 100
 		self.alien_size_x = 68
@@ -42,7 +45,7 @@ class ExampleWindow(QMainWindow):
 
 		self.sd = QtWidgets.QLabel(self)
 		self.sd.setPixmap(self.sd_img)
-
+		
 			
 
 	def paintEvent (self, e):
@@ -54,7 +57,8 @@ class ExampleWindow(QMainWindow):
 
 
 	def squad(self):
-		for i in range(6):
+		for i in range(15):
+
 			''' создаем пришельцев, их цвета и формы, их местоположение в пространстве'''
 			self.alien_unit.append(QtWidgets.QLabel(self))	
 			self.alien_unit[i].setPixmap(self.alien_blue_img)
@@ -62,8 +66,15 @@ class ExampleWindow(QMainWindow):
 			self.alien_hitbox.append(QtWidgets.QPushButton(self))
 			self.alien_hitbox[i].setGeometry(QtCore.QRect(self.step_x, self.step_y, self.alien_size_x, self.alien_size_y))
 			self.alien_hitbox[i].setStyleSheet('QPushButton {background-color: rgba(10,10,10,10); border-style: solid; border-width: 1px; border-color: gray; color: black; }')
-			self.alien_x.append(self.step_x)
+			self.alien_x.append(self.step_x)			
 			self.step_x += self.alien_size_x+30
+			if len(self.alien_x)/5 == len(self.alien_x)//5:
+				self.step_x = 100
+				self.step_y += 60
+			self.alien_kill.append(1)
+			print(self.alien_x[i])
+			#self.time.stop()
+		pass
 
 
 	def my_player(self):
@@ -71,38 +82,53 @@ class ExampleWindow(QMainWindow):
 		#self.player.setGeometry(QtCore.QRect(self.player_x, self.player_y, 70, 58))
 		pass
 
-	def keyPressEvent(self, event):		
+	def keyPressEvent(self, event):	
+
 		if event.key() == QtCore.Qt.Key_D and self.player_x <= 800-100:
 			self.player_x += 10
 		if event.key() == QtCore.Qt.Key_A and self.player_x >= 0+50:
 			self.player_x -= 10
 		if event.key() == QtCore.Qt.Key_S:
+			
 			if self.time.isActive():
 				pass
 			else:	
 				self.sd_y = self.player_y
 				self.sd_x = self.player_x
-				self.time.start(10, self)			
+				#self.step_x = self.alien_x[4]
+				self.time.start(1000, self)			
 		self.player.setGeometry(QtCore.QRect(self.player_x, self.player_y, 70, 58))
 		event.accept()
+
 
 	def sd_event(self):
 		pass
 
 	def timerEvent(self, e):
-		if self.sd_y > 0:
+
+		self.step_x += self.alien_speed
+		if self.step_x > 830 or self.step_x < 590: #self.alien_x[1] = 100, self.alien_x[5] = 590, step_x = 688
+			self.step_y += 50
+			
+			self.alien_speed = -self.alien_speed
+		#print(self.alien_x)
+		for i in range(15):
+			self.alien_unit[i].setGeometry(QtCore.QRect(self.alien_x[i], self.step_y+50, self.alien_size_x, self.alien_size_y))
+			print(self.step_x) 
+		#self.alien_unit[1].setGeometry(QtCore.QRect(self.step_x, self.step_y+50, self.alien_size_x, self.alien_size_y))
+					
+		'''if self.sd_y > 0:
 			self.sd_y -= 1		
 			self.sd.setGeometry(QtCore.QRect(self.sd_x+10, self.sd_y-20, 30, 30))	
-			for i in range(6):
-				
-				if self.sd_y == self.step_y + self.alien_size_y and self.sd_x + 33 >= self.alien_x[i] and self.sd_x + 17 <= self.alien_x[i] + self.alien_size_x:
+			for i in range(6):				
+				if self.sd_y == self.step_y + self.alien_size_y and self.sd_x + 33 >= self.alien_x[i] and \
+				self.sd_x + 17 <= self.alien_x[i] + self.alien_size_x and self.alien_kill[i] == 1:
 					print(self.alien_x[i])
+					print(self.alien_kill)
 					self.alien_unit[i].setPixmap(self.alien_yello_img)
+					self.alien_kill[i] = 0'''
 
-	
-		else:
-			self.time.stop()	
-
+		#self.step_y += 20
 		self.repaint()
 
 
