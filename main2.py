@@ -20,16 +20,18 @@ class ExampleWindow(QMainWindow):
 		self.alien_unit = []
 		self.alien_unit_x = []
 		self.alien_unit_y = []
+		self.alien_unit_kill = []
 		for i in range(18):
 			self.alien_unit.append(QtWidgets.QLabel(self))	
-			self.alien_unit_x.append(QtWidgets.QLabel(self))	
-			self.alien_unit_y.append(QtWidgets.QLabel(self))	
+			self.alien_unit_x.append(0)	
+			self.alien_unit_y.append(0)	
+			self.alien_unit_kill.append(1)
 		self.alien_size_x, self.alien_size_y = 68, 55
 		self.alien = QtGui.QPixmap('7471.png')
 		self.alien_green_img = self.alien.copy(104, 0, self.alien_size_x, self.alien_size_y)
 		self.alien_blue_img = self.alien.copy(257, 0, self.alien_size_x, self.alien_size_y)
 		self.step_x, self.step_y = 10, 50
-		self.alien_speed = 10
+		self.alien_speed = 1
 		self.player = QtWidgets.QLabel(self)
 		self.player_img = QtGui.QPixmap('player.png')
 		self.player_x, self.player_y = 400, 540
@@ -59,26 +61,44 @@ class ExampleWindow(QMainWindow):
 	def timerEvent(self, e):
 		t = 0
 		n = 0
-
+		k = 250
 		'''создание пришельцев'''
-		for i in range(18): 			
-			self.alien_unit[i].setPixmap(self.alien_green_img)
-			self.alien_unit[i].setGeometry(QtCore.QRect(self.step_x+t, self.step_y+n, self.alien_size_x, self.alien_size_y))
+		for i in range(18): 
+			self.alien_unit[i].setPixmap(self.alien_green_img)	
+			if self.alien_unit_kill[i] == 0:		
+				self.alien_unit[i].setPixmap(self.alien_blue_img)
+				self.alien_unit_x[i] = 0
+				k = max(self.alien_unit_x)
+				print (k)
+		
 			self.alien_unit_x[i] = self.step_x+t
 			self.alien_unit_y[i] = self.step_y+n
+
+			self.alien_unit[i].setGeometry(QtCore.QRect(self.alien_unit_x[i], self.alien_unit_y[i], self.alien_size_x, self.alien_size_y))
 			t += 68 + 30
 			if t >= 508: 
 				t = 0
 				n += 55
-			if self.sd_x <= self.alien_unit_x[i] + self.alien_size_x and \
-				self.sd_x + 30 >= self.alien_unit_x[i] and \
-				self.sd_y <= self.alien_unit_y[i] + self.alien_size_y:
+			#движение пришельцев
+			self.step_x += self.alien_speed		
+			if self.step_x >= k or self.step_x < 0: #было 250
+				self.step_y += 1
+				self.alien_speed = -self.alien_speed
+
+	# попадание по пришельцам
+			if self.sd_x + 20 < self.alien_unit_x[i] + self.alien_size_x and \
+				self.sd_x + 35 > self.alien_unit_x[i] and \
+				self.sd_y <= self.alien_unit_y[i] + self.alien_size_y and \
+				self.alien_unit_kill[i] == 1: # 20 и 35 коэффициенты точности. чем больше, тем точнее к середине
+				self.my_sd = False
 				self.alien_unit[i].setPixmap(self.alien_blue_img)
-		'''движение пришельцев'''		
+				self.alien_unit_kill[i] = 0
+	#движение пришельцев /рабочая версия
 		#self.step_x += self.alien_speed		
-		if self.step_x >= 245 or self.step_x <= 0: 
-			self.step_y += 10
-			self.alien_speed = -self.alien_speed
+		#if self.step_x >= 245 or self.step_x <= 0: 
+		#	self.step_y += 10
+		#	self.alien_speed = -self.alien_speed
+
 
 		'''движение sd'''
 		if self.sd_y > 0 and self.my_sd == True:
@@ -91,7 +111,7 @@ class ExampleWindow(QMainWindow):
 			self.sd_x = self.player_x
 			self.sd_y = self.player_y
 
-		print(self.alien_unit_x[0])
+		
 
 app = QtWidgets.QApplication(sys.argv)
 main_window = ExampleWindow()
